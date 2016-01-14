@@ -1,0 +1,14 @@
+{
+  "name": "node-ftp-blob",
+  "version": "1.0.0",
+  "description": "FTP interface for Azure Blob Storage.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ftpd": "^0.2.15"
+  }
+}
