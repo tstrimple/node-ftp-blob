@@ -1,69 +1,86 @@
 var azure = require('azure-storage');
 var blobSvc = azure.createBlobService();
-var nfs = require('fs');
 var container = process.env.AZURE_STORAGE_CONTAINER || 'ftp';
-
-console.log('using container', container);
 
 var fs = {
   unlink: function(path, callback) {
-    console.log('UNLINK not implemented!', arguments);
-    callback();
+    blobSvc.deleteBlobIfExists(container, path, callback);
   },
 
   readdir: function(path, callback) {
-    console.log('readdir', path);
+    if(process.env.WRITE_ONLY) {
+      return callback(null, []);
+    }
+
     blobSvc.listBlobsSegmented(container, null, function(err, res) {
       var files = [];
       if(res && res.entries) {
         files = res.entries.map(function(entry) { return entry.name.replace(path, ''); });
       }
 
-      console.log('listBlobsSegmented', err, files);
       callback(err, files);
     });
   },
 
   mkdir: function(path, mode, callback) {
+    console.log('################################');
     console.log('MKDIR not implemented!', arguments);
+    console.log('################################');
     callback();
   },
 
   open: function(path, flags, mode, callback) {
+    console.log('################################');
     console.log('OPEN not implemented!', arguments);
+    console.log('################################');
     callback();
   },
 
   close: function(fd, callback) {
+    console.log('################################');
     console.log('CLOSE not implemented!', arguments);
+    console.log('################################');
     callback();
   },
 
   rmdir: function(path, callback) {
+    console.log('################################');
     console.log('RMDIR not implemented!', arguments);
+    console.log('################################');
     callback();
   },
 
   rename: function(oldPath, newPath, callback) {
-    console.log('RENAME not implemented!', arguments);
-    callback();
+    // get url
+    // copy blob
+    // delete original
+    var source = blobSvc.getUrl(container, oldPath);
+    blobSvc.startCopyBlob(source, container, newPath, function(err) {
+      if(err) {
+        throw new Error(err);
+      }
+
+      return fs.unlink(oldPath, callback);
+    });
   },
 
   stat: function(path, callback) {
-    // { mode, isDirectory(), size, mtime }
     blobSvc.getBlobProperties(container, path, function(err, res) {
-      console.log('STAT', path, res);
-      callback(err, { isDirectory: function() { return false; }, size: res.contentLength, mtime: res.lastModified, mode: '' });
+      callback(err, {
+        isDirectory: function() { return false; },
+        size: res ? res.contentLength : 0,
+        mtime: res ? res.lastModified : '',
+        mode: ''
+      });
     });
   },
 
   createWriteStream: function(path, options) {
-    // createWriteStream: Returns a writable stream, requiring:
-    // events: 'open', 'error', 'close'
-    // functions: 'write'
-    console.log('createWriteStreamToBlockBlob', arguments);
     var stream = blobSvc.createWriteStreamToBlockBlob(container, path);
-    console.log('stream', stream);
+    process.nextTick(function() {
+      stream.emit('open');
+    });
+
     return stream;
   },
 
