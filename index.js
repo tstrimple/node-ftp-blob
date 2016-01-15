@@ -41,10 +41,10 @@ server = new ftpd.FtpServer(options.host, {
     return '/';
   },
   getRoot: function(connection) {
-    return '/' + connection.username + '/';
+    return connection.username + '/';
   },
-  //pasvPortRangeStart: 1025,
-  //pasvPortRangeEnd: 1050,
+  pasvPortRangeStart: 10001,
+  pasvPortRangeEnd: 10020,
   tlsOptions: options.tls,
   allowUnauthorizedTls: true,
   useWriteFile: false,

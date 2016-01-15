@@ -8,6 +8,7 @@ var fs = {
   },
 
   readdir: function(path, callback) {
+        console.log('CREATING STREAM FOR PATH', path);
     if(process.env.WRITE_ONLY) {
       return callback(null, []);
     }
