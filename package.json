@@ -4,11 +4,11 @@
   "description": "FTP interface for Azure Blob Storage.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Timothy Strimple <tim@tstrimple.com>",
+  "license": "MIT",
   "dependencies": {
+    "azure-storage": "^0.7.0",
     "ftpd": "^0.2.15"
   }
 }
